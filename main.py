@@ -14,15 +14,22 @@ parser.add_argument("--path", "-p", type=str, nargs=1, required=True, help="Spec
 parser.add_argument("--conf", type=float, nargs=1, required=False, help="Specify confidence threshold")
 args = parser.parse_args()
 
-exp = get_exp(exp_name=args.name[0])
-model = exp.get_model()
-model.eval()
+try:
+    exp = get_exp(exp_name=args.name[0])
+    model = exp.get_model()
+    model.eval()
+except ModuleNotFoundError:
+    print("Model not found!")
+    exit()
 
 confidence = args.conf[0] if args.conf is not None else 0
 
-
-ckpt = torch.load(args.ckpt[0], map_location="cpu")
-model.load_state_dict(ckpt["model"])
+try:
+    ckpt = torch.load(args.ckpt[0], map_location="cpu")
+    model.load_state_dict(ckpt["model"])
+except FileNotFoundError:
+    print("Module file not found!")
+    exit()
 
 if os.path.exists(args.path[0]):
     inputVideo = cv2.VideoCapture(args.path[0])
