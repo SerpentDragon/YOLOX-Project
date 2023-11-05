@@ -2,10 +2,11 @@ import os
 import cv2
 import torch
 import argparse
+import visualization
 from yolox.data.data_augment import preproc
 from yolox.data.datasets import COCO_CLASSES
 from yolox.exp import get_exp
-from yolox.utils import postprocess, vis
+from yolox.utils import postprocess
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--name", "-n", type=str, nargs=1, required=True, help="Specify name of your model")
@@ -70,7 +71,7 @@ while True:
             cls = outputs[0][:, 6]
             scores = outputs[0][:, 4] * outputs[0][:, 5]
 
-            vis_res = vis(frame, bboxes, scores, cls, confidence, COCO_CLASSES)
+            vis_res = visualization.vis(frame, bboxes, scores, cls, confidence, COCO_CLASSES)
         else:
             vis_res = frame
 
