@@ -58,3 +58,5 @@ To run the programm you may use the following command:
 ```
 python3.10 main.py -n yolox-x -c ./models/yolox_x.pth -p ./video/develop_streem.ts --conf 0.25
 ```
+
+![Image alt](https://github.com/SerpentDragon/YOLOX-Project/blob/master/demo/demo.jpg)

@@ -58,8 +58,6 @@ outputPath = os.path.splitext(args.path[0])
 outputVideo = cv2.VideoWriter(os.path.join(result_path, os.path.basename(outputPath[0] + "_output" + outputPath[1])),
                               fourcc, frame_rate, (frame_width, frame_height))
 
-counter = 0
-
 while True:
     ret, frame = inputVideo.read()
     if not ret:
@@ -82,8 +80,6 @@ while True:
             vis_res = frame
 
         outputVideo.write(vis_res)
-
-    counter += 1
 
 inputVideo.release()
 outputVideo.release()
