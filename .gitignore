@@ -3,4 +3,5 @@
 /models/
 /video/
 /.idea/
+/__pycache__/
 ./result.ts

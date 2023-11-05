@@ -3,6 +3,7 @@ import cv2
 import torch
 import argparse
 import visualization
+from datetime import datetime
 from yolox.data.data_augment import preproc
 from yolox.data.datasets import COCO_CLASSES
 from yolox.exp import get_exp
@@ -47,6 +48,11 @@ else:
 result_path = "YOLOXProject_outputs"
 if not os.path.exists(result_path):
     os.mkdir(result_path)
+
+new_folder = str(datetime.now())
+result_path = os.path.join(result_path, new_folder)
+os.mkdir(result_path)
+
 
 outputPath = os.path.splitext(args.path[0])
 outputVideo = cv2.VideoWriter(os.path.join(result_path, os.path.basename(outputPath[0] + "_output" + outputPath[1])),
