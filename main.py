@@ -1,3 +1,4 @@
+import os
 import cv2
 import torch
 import argparse
@@ -10,24 +11,38 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--name", "-n", type=str, nargs=1, required=True, help="Specify name of your model")
 parser.add_argument("--ckpt", "-c", type=str, nargs=1, required=True, help="Specify path to your model")
 parser.add_argument("--path", "-p", type=str, nargs=1, required=True, help="Specify path to your input video")
+parser.add_argument("--conf", type=float, nargs=1, required=False, help="Specify confidence threshold")
 args = parser.parse_args()
 
 exp = get_exp(exp_name=args.name[0])
 model = exp.get_model()
 model.eval()
 
+confidence = args.conf[0] if args.conf is not None else 0
+
+
 ckpt = torch.load(args.ckpt[0], map_location="cpu")
 model.load_state_dict(ckpt["model"])
 
-inputVideo = cv2.VideoCapture(args.path[0])
+if os.path.exists(args.path[0]):
+    inputVideo = cv2.VideoCapture(args.path[0])
 
-frame_width = int(inputVideo.get(cv2.CAP_PROP_FRAME_WIDTH))
-frame_height = int(inputVideo.get(cv2.CAP_PROP_FRAME_HEIGHT))
-frame_rate = int(inputVideo.get(cv2.CAP_PROP_FPS))
-frame_duration = 1 / frame_rate
-fourcc = cv2.VideoWriter.fourcc('X', 'V', 'I', 'D')
+    frame_width = int(inputVideo.get(cv2.CAP_PROP_FRAME_WIDTH))
+    frame_height = int(inputVideo.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    frame_rate = int(inputVideo.get(cv2.CAP_PROP_FPS))
+    frame_duration = 1 / frame_rate
+    fourcc = cv2.VideoWriter.fourcc('X', 'V', 'I', 'D')
+else:
+    print("Video file not found!")
+    exit()
 
-outputVideo = cv2.VideoWriter("result.ts", fourcc, frame_rate, (frame_width, frame_height))
+result_path = "YOLOXProject_outputs"
+if not os.path.exists(result_path):
+    os.mkdir(result_path)
+
+outputPath = os.path.splitext(args.path[0])
+outputVideo = cv2.VideoWriter(os.path.join(result_path, os.path.basename(outputPath[0] + "_output" + outputPath[1])),
+                              fourcc, frame_rate, (frame_width, frame_height))
 
 counter = 0
 
@@ -48,7 +63,7 @@ while True:
             cls = outputs[0][:, 6]
             scores = outputs[0][:, 4] * outputs[0][:, 5]
 
-            vis_res = vis(frame, bboxes, scores, cls, 0.1, COCO_CLASSES)
+            vis_res = vis(frame, bboxes, scores, cls, confidence, COCO_CLASSES)
         else:
             vis_res = frame
 
